@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クリップ一覧</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/clipActions.js" defer></script>
+</head>
+<body>
+  <h1>クリップ一覧</h1>
+
+  <div id="clips-list">
+    <% clips.forEach(clip => { %>
+      <div class="clip">
+        <div class="buttons">
+          <form action="#">
+            <input type="submit" class="watch-btn" value="視聴" data-videoID="<%= clip.videoID %>" data-start="<%= clip.original_start_time %>" data-end="<%= clip.original_end_time %>">
+          </form>
+          <button class="edit-btn">編集</button>
+          <form action="#">
+            <input type="submit" class="delete-btn" value="削除" data-id="<%= clip.id %>">
+          </form>
+        </div>
+        <% if (clip.image_url) { %>
+          <img src="<%= clip.image_url %>" alt="クリップ画像">
+        <% } %>
+        <h2><%= clip.title %></h2>
+        <p>VideoID: <a href="<%= clip.youtube_url %>" target="_blank"><%= clip.videoID %></a></p>
+        <p>開始時刻: <%= clip.start_time %></p>
+        <p>終了時刻: <%= clip.end_time %></p>
+      </div>
+    <% }); %>
+  </div>
+</body>
+</html>
