@@ -1,0 +1,126 @@
+/* クリップリスト */
+#clips-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* クリップカード */
+.clip {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  padding: 15px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.clip:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* クリップタイトル */
+.clip h2 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #0056b3;
+}
+
+/* クリップリンク */
+.clip a {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+.clip a:hover {
+  text-decoration: underline;
+}
+
+/* クリップ画像 */
+.clip img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+/* メタ情報 */
+.clip p {
+  margin: 5px 0;
+  font-size: 0.9em;
+  color: #555;
+}
+
+/* 視聴ボタンのスタイル */
+.watch-btn {
+  background-color: #2ecc71; /* 緑色 */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-right: 10px;
+  text-align: center; /* ボタン内のテキストを中央揃え */
+  display: inline-block;
+}
+
+.watch-btn:hover {
+  background-color: #27ae60; /* ホバー時に濃い緑 */
+  transform: scale(1.05); /* 少し拡大して強調 */
+}
+
+.watch-btn:focus {
+  box-shadow: 0 0 5px rgba(46, 204, 113, 0.7); /* フォーカス時に緑の影を表示 */
+}
+
+/* 編集ボタンのスタイル */
+.edit-btn {
+  background-color: #3498db; /* 青色 */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-right: 10px;
+  text-align: center; /* ボタン内のテキストを中央揃え */
+  display: inline-block;
+}
+
+.edit-btn:hover {
+  background-color: #2980b9; /* ホバー時に濃い青 */
+  transform: scale(1.05); /* 少し拡大して強調 */
+}
+
+.edit-btn:focus {
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.7); /* フォーカス時に青の影を表示 */
+}
+
+/* 削除ボタンのスタイル */
+.delete-btn {
+  background-color: #e74c3c; /* 赤色 */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  text-align: center; /* ボタン内のテキストを中央揃え */
+  display: inline-block;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b; /* ホバー時に濃い赤 */
+  transform: scale(1.05); /* 少し拡大して強調 */
+}
+
+.delete-btn:focus {
+  box-shadow: 0 0 5px rgba(231, 76, 60, 0.7); /* フォーカス時に赤の影を表示 */
+}

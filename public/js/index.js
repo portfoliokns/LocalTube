@@ -2,22 +2,31 @@ document.querySelectorAll('.watch-btn').forEach(button => {
   button.addEventListener('click', (event) => {
     event.preventDefault();
 
-    const videoID = event.target.getAttribute('data-videoID');
-    const startTime = event.target.getAttribute('data-start');
-    const endTime = event.target.getAttribute('data-end');
+    const videoID = event.target.getAttribute('videoID');
+    const startTime = event.target.getAttribute('start');
+    const endTime = event.target.getAttribute('end');
 
     const url =  `/clip_redirect?videoID=${videoID}&start=${startTime}&end=${endTime}`;
     window.open(url, '_blank');
   });
 });
 
+document.querySelectorAll('.edit-btn').forEach(button => {
+  button.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    const id = event.target.getAttribute('id');
+    window.location.href = `/edit/${id}`; 
+  })
+})
+
 document.querySelectorAll('.delete-btn').forEach(button => {
   button.addEventListener('click', (event) => {
     event.preventDefault();
 
-    const clipId = event.target.getAttribute('data-id');
+    const id = event.target.getAttribute('id');
     if (confirm('本当に削除してもよろしいですか？')) {
-      fetch(`/clips/${clipId}`, {
+      fetch(`/clips/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'

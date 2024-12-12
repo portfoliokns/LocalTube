@@ -1,0 +1,39 @@
+<div id="edit-form">
+  <form action="/edit/<%= clip.id %>" method="POST">
+    <% if (clip.image_url) { %>
+      <div class="image-preview">
+        <a href="<%= clip.image_url %>" class="lightbox" target="_blank">
+          <img src="<%= clip.image_url %>" alt="クリップ画像" style="max-width: 300px; max-height: 200px;">
+        </a>
+      </div>
+    <% } %>
+
+    <div class="form-group">
+      <label for="title">タイトル</label>
+      <input type="text" id="title" name="title" value="<%= clip.title %>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="start_time">開始時刻</label>
+      <input type="text" id="start_time" name="start_time" value="<%= clip.start_time %>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="end_time">終了時刻</label>
+      <input type="text" id="end_time" name="end_time" value="<%= clip.end_time %>" required>
+    </div>
+
+    <div class="form-group">
+      <label for="videoID">YouTube VideoID</label>
+      <input type="url" id="videoID" name="VideoID" value="<%= clip.videoID %>" required>
+    </div>
+
+    <div class="form-group">
+      <input type="submit" value="保存" class="save_btn" id="<%= clip.id %>">
+    </div>
+  </form>
+
+  <div class="back-btn">
+    <a href="/">戻る</a>
+  </div>
+</div>
