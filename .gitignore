@@ -1,5 +1,5 @@
 /node_modules
-#/uploads
+/uploads
 package.json
 package-lock.json
 youtube.db
