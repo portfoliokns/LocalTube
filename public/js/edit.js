@@ -45,8 +45,10 @@ document.querySelectorAll('.save_btn').forEach(button => {
     const form = event.target.closest('form');
     const title = form.querySelector('#title').value;
     const videoID = form.querySelector('#videoID').value;
-    const startTime = form.querySelector('#start_time').value;
-    const endTime = form.querySelector('#end_time').value;
+    const startInput = form.querySelectorAll('.start_time');
+    const startTime = Array.from(startInput).map(input => input.value).join(":");
+    const endInput = form.querySelectorAll('.end_time');
+    const endTime = Array.from(endInput).map(input => input.value).join(":");
 
     if (confirm('保存してもよろしいですか？')) {
       fetch(`/clips/${id}`, {

@@ -24,7 +24,8 @@
 
 /* 入力フィールドのスタイル */
 .form-group input[type="text"],
-.form-group input[type="url"] {
+.form-group input[type="url"],
+.form-group input[type="number"] {
   width: 100%;
   padding: 10px;
   font-size: 1em;
@@ -38,6 +39,10 @@
   border-color: #3498db;
   outline: none;
   box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.form-number {
+  display: flex;
 }
 
 /* 画像プレビューのスタイル */

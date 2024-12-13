@@ -148,17 +148,19 @@ app.delete('/clips/:id', (req, res) => {
   });
 });
 
-// クリップ削除処理
+// クリップ更新処理
 app.patch('/clips/:id', (req, res) => {
   const id = req.params.id;
   const { title, videoID, start_time, end_time } = req.body;
+  const start_time_second = formatSeconds(start_time);
+  const end_time_second = formatSeconds(end_time);
 
   // トランザクションの開始
   db.serialize(() => {
     // トランザクション開始
     db.run('BEGIN TRANSACTION');
 
-    db.run('UPDATE clips SET title = ?, videoID = ?, start_time = ?, end_time = ? WHERE id = ?', [title, videoID, start_time, end_time, id], (err) => {
+    db.run('UPDATE clips SET title = ?, videoID = ?, start_time = ?, end_time = ? WHERE id = ?', [title, videoID, start_time_second, end_time_second, id], (err) => {
       if (err) {
         // レコード削除に失敗した場合もロールバック
         db.run('ROLLBACK');
@@ -238,6 +240,8 @@ app.get('/edit/:id', async (req, res) => {
           end_time: formatTime(row.end_time), // 終了時刻をフォーマット
         };
 
+        console.log(formattedClip)
+
         ejs.renderFile(path.join(__dirname, 'views', 'edit.ejs'), { clip: formattedClip }, (err, content) => {
           if (err) {
             console.error("テンプレートレンダリングエラー:", err);
@@ -288,4 +292,20 @@ function formatTime(seconds) {
 
   // フォーマットした時間を「H:MM:SS:SSS」として返す
   return `${hours}:${formattedMinutes}:${formattedSeconds}:${formattedMilliseconds}`;
+}
+
+// 秒を "MM:SS" フォーマットに変換する関数
+function formatSeconds(time) {
+  const parts = time.split(':').map(Number)
+  let seconds = 0;
+
+  // 秒数へ変換
+  if (parts.length === 4) {
+    seconds += parts[0] * 3600; // 時間を秒に変換
+    seconds += parts[1] * 60;   // 分を秒に変換
+    seconds += parts[2];        // 秒
+    seconds += parts[3] / 1000;  // ミリ秒
+  }
+
+  return seconds
 }
