@@ -1,25 +1,16 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>クリップ一覧</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <script src="/js/clipActions.js" defer></script>
-</head>
-<body>
-  <h1>クリップ一覧</h1>
-
+<div id="clips-list">
   <div id="clips-list">
     <% clips.forEach(clip => { %>
       <div class="clip">
         <div class="buttons">
           <form action="#">
-            <input type="submit" class="watch-btn" value="視聴" data-videoID="<%= clip.videoID %>" data-start="<%= clip.original_start_time %>" data-end="<%= clip.original_end_time %>">
+            <input type="submit" class="watch-btn" value="視聴" videoID="<%= clip.videoID %>" start="<%= clip.original_start_time %>" end="<%= clip.original_end_time %>">
           </form>
-          <button class="edit-btn">編集</button>
           <form action="#">
-            <input type="submit" class="delete-btn" value="削除" data-id="<%= clip.id %>">
+            <input type="submit" class="edit-btn" value="編集" id="<%= clip.id %>">
+          </form>
+          <form action="#">
+            <input type="submit" class="delete-btn" value="削除" id="<%= clip.id %>">
           </form>
         </div>
         <% if (clip.image_url) { %>
@@ -31,6 +22,5 @@
         <p>終了時刻: <%= clip.end_time %></p>
       </div>
     <% }); %>
-  </div>
-</body>
-</html>
+</div>
+

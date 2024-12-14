@@ -1,4 +1,6 @@
 const express = require('express');
+const ejs = require('ejs');
+const engine = require('ejs-mate');
 const multer = require('multer');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
@@ -92,7 +94,7 @@ app.post('/images', upload.single('image'), (req, res) => {
 
 // クリップ削除処理
 app.delete('/clips/:id', (req, res) => {
-  const clipId = req.params.id;  // URLパラメータからIDを取得
+  const id = req.params.id;  // URLパラメータからIDを取得
   
   // トランザクションの開始
   db.serialize(() => {
@@ -100,7 +102,7 @@ app.delete('/clips/:id', (req, res) => {
     db.run('BEGIN TRANSACTION');
 
     // データベースでIDに基づいて画像のパスを取得する
-    db.get('SELECT image_url FROM clips WHERE id = ?', [clipId], (err, row) => {
+    db.get('SELECT image_url FROM clips WHERE id = ?', [id], (err, row) => {
       if (err) {
         // エラーが発生した場合はロールバック
         db.run('ROLLBACK');
@@ -114,12 +116,9 @@ app.delete('/clips/:id', (req, res) => {
         return res.status(404).json({ success: false, message: '指定されたIDのクリップが見つかりません。' });
       }
 
-      console.log(row)
-
       const imagePath = row.image_url;  // 画像のパスを取得
 
       // 画像ファイルを削除
-      console.log(imagePath)
       fs.unlink(path.join(__dirname, imagePath), (err) => {
         if (err) {
           // 画像削除に失敗した場合もロールバック
@@ -131,7 +130,7 @@ app.delete('/clips/:id', (req, res) => {
         console.log(`画像ファイル (${imagePath}) が削除されました`);
 
         // 画像削除が成功したら、データベースからクリップを削除
-        db.run('DELETE FROM clips WHERE id = ?', [clipId], (err) => {
+        db.run('DELETE FROM clips WHERE id = ?', [id], (err) => {
           if (err) {
             // レコード削除に失敗した場合もロールバック
             db.run('ROLLBACK');
@@ -141,7 +140,7 @@ app.delete('/clips/:id', (req, res) => {
 
           // 両方の操作が成功したらコミット
           db.run('COMMIT');
-          console.log(`ID: ${clipId} のクリップが削除されました`);
+          console.log(`ID: ${id} のクリップが削除されました`);
           return res.json({ success: true, message: 'クリップが削除され、画像も削除されました。' });
         });
       });
@@ -149,6 +148,32 @@ app.delete('/clips/:id', (req, res) => {
   });
 });
 
+// クリップ更新処理
+app.patch('/clips/:id', (req, res) => {
+  const id = req.params.id;
+  const { title, videoID, start_time, end_time } = req.body;
+  const start_time_second = formatSeconds(start_time);
+  const end_time_second = formatSeconds(end_time);
+
+  // トランザクションの開始
+  db.serialize(() => {
+    // トランザクション開始
+    db.run('BEGIN TRANSACTION');
+
+    db.run('UPDATE clips SET title = ?, videoID = ?, start_time = ?, end_time = ? WHERE id = ?', [title, videoID, start_time_second, end_time_second, id], (err) => {
+      if (err) {
+        // レコード削除に失敗した場合もロールバック
+        db.run('ROLLBACK');
+        console.error('レコード更新エラー:', err);
+        return res.status(500).json({ success: false, message: 'クリップの保存に失敗しました。' });
+      }
+      // 両方の操作が成功したらコミット
+      db.run('COMMIT');
+      console.log(`ID: ${id} のクリップが更新されました`);
+      return res.json({ success: true, message: 'クリップが更新されました。' });
+    });
+  });
+});
 
 app.use('/uploads', express.static('uploads'));
 
@@ -156,11 +181,12 @@ app.use('/uploads', express.static('uploads'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // テンプレートエンジンとしてEJSを設定
+app.engine('ejs', engine);
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));  // viewsフォルダの指定
+app.set('views', __dirname + '/views');
 
 // ルートパスでレスポンス
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   db.all("SELECT * FROM clips ORDER BY id DESC", [], (err, rows) => {
     if (err) {
       return res.status(500).send('データベースエラー');
@@ -175,13 +201,71 @@ app.get('/', (req, res) => {
       end_time: formatTime(clip.end_time), // 終了時刻をフォーマット
     }));
 
-    // EJSテンプレートにデータを渡してHTMLを返す
-    res.render('index', { clips: formattedClips });
+    ejs.renderFile(path.join(__dirname, 'views', 'index.ejs'), { clips: formattedClips }, (err, content) => {
+      if (err) {
+        console.error("テンプレートレンダリングエラー:", err);
+        return res.status(500).send('テンプレートエラー');
+      }
+
+      res.render('layout', {
+        title: "クリップ一覧",
+        pageCSS: 'index',
+        pageJS: 'index',
+        headerTitle: "クリップ一覧",
+        content,
+        clips: formattedClips
+      });
+    });
   });
 });
 
 app.get('/clip_redirect', (req, res) => {
-    res.render('clip_redirect');
+  res.render('clip_redirect');
+});
+
+app.get('/edit/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    db.get('SELECT * FROM clips WHERE id = ?', [id], (err, row) => {
+      if (err) {
+        return res.status(500).send('データベースエラー');
+      }
+
+      if (row){
+        const formattedClip = {
+          ...row, // 既存のデータを保持
+          original_start_time: row.start_time, // フォーマット前の開始時刻
+          original_end_time: row.end_time, // フォーマット前の終了時刻
+          start_time: formatTime(row.start_time), // 開始時刻をフォーマット
+          end_time: formatTime(row.end_time), // 終了時刻をフォーマット
+        };
+
+        console.log(formattedClip)
+
+        ejs.renderFile(path.join(__dirname, 'views', 'edit.ejs'), { clip: formattedClip }, (err, content) => {
+          if (err) {
+            console.error("テンプレートレンダリングエラー:", err);
+            return res.status(500).send('テンプレートエラー');
+          }
+    
+          res.render('layout', {
+            title: "クリップ編集",
+            pageCSS: 'edit',
+            pageJS: 'edit',
+            headerTitle: "クリップ編集",
+            content,
+            clips: formattedClip
+          });
+        });
+      } else {
+        reject(new Error('データが見つかりませんでした'));
+      }
+    });
+
+  } catch (err) {
+    console.error('データベースエラー:', err);
+    res.status(500).send('データベースエラー');
+  }
 });
 
 // サーバー起動
@@ -208,4 +292,20 @@ function formatTime(seconds) {
 
   // フォーマットした時間を「H:MM:SS:SSS」として返す
   return `${hours}:${formattedMinutes}:${formattedSeconds}:${formattedMilliseconds}`;
+}
+
+// 秒を "MM:SS" フォーマットに変換する関数
+function formatSeconds(time) {
+  const parts = time.split(':').map(Number)
+  let seconds = 0;
+
+  // 秒数へ変換
+  if (parts.length === 4) {
+    seconds += parts[0] * 3600; // 時間を秒に変換
+    seconds += parts[1] * 60;   // 分を秒に変換
+    seconds += parts[2];        // 秒
+    seconds += parts[3] / 1000;  // ミリ秒
+  }
+
+  return seconds
 }
