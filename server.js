@@ -4,7 +4,6 @@ const engine = require('ejs-mate');
 const multer = require('multer');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
@@ -42,19 +41,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-// CORS設定（chrome-extension:// のみを許可）
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || origin.startsWith('chrome-extension://') || origin === `http://localhost:${port}`) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS policy error: Origin not allowed'), false);
-    }
-  },
-  methods: ['POST','DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
 
 // JSONボディを解析するためのミドルウェア
 app.use(express.json());
