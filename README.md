@@ -43,7 +43,7 @@ nodemon server.js
 ## Webページの表示
 chromeのアドレスバーに以下のアドレスを入力して、ローカルサーバーにアクセスしてください。
 ```:アドレス
-http://localhost:6789/
+http://localhost:50000/
 ```
 擬似クリップ情報の一覧が表示されます。
 
