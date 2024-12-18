@@ -7,7 +7,7 @@ const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 
 const app = express();
-const port = 6789;
+const port = 50000;
 
 // データベースの接続
 const db = new sqlite3.Database('./youtube.db', (err) => {
