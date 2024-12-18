@@ -29,6 +29,12 @@ git clone https://github.com/portfoliokns/LocalTube.git
 - views
 - server.js
 
+## モジュールのインストール
+以下のモジュールをインストールしてください。
+```
+npm install express ejs ejs-mate multer sqlite3
+```
+
 ## "YouTubeExtension"のインストール
 設定等は[YouTubeExtensionのReadMe](https://github.com/portfoliokns/YoutubeExtension)をご確認ください。
 
