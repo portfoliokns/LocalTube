@@ -10,7 +10,7 @@
   - 擬似クリップの動画(全編)を視聴することができます。
   - 視聴する際はYouTubeページ上からの視聴となります。
 
-※状況に応じて、機能をアップデートしていく予定です。
+※NEXT.jsへの移植を予定
 
 記事は[こちら](https://my-blog-one-taupe.vercel.app/blog/fc5oscnrumh)。
 
